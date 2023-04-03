@@ -1,0 +1,14 @@
+<RCC>
+  <qresource prefix="resources">
+    <file>icons/wifi-router.png</file>
+    <file>icons/battery.png</file>
+    <file>icons/charger-crop.png</file>
+    <file>icons/solar-inverter-crop.png</file>
+    <file>icons/database.png</file>
+    <file>icons/main_apps.ico</file>
+    <file>icons/main_apps.png</file>
+    <file>icons/serial.png</file>
+    <file>icons/terminal.png</file>
+    <file>icons/uploader.png</file>
+  </qresource>
+</RCC>

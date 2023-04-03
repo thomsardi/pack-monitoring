@@ -1,0 +1,10 @@
+{ 
+    "control_type" : 0,
+    "mode" : 0,
+    "voltage" : 0,
+    "voltage_cut_off_1" : 0,
+    "voltage_cut_off_2" : 0,
+    "current" : 0,
+    "power" : 0,
+    "start" : 0
+}

@@ -1,0 +1,34 @@
+{
+    "charger_url" : {
+        "ip" : "192.168.2.150",
+        "data_url" : "http://%ip/get-data-charger",
+        "voltage_url" : "http://%ip/set-voltage",
+        "current_url" : "http://%ip/set-current",
+        "module32_url" : "http://%ip/set-module-32",
+        "module64_url" : "http://%ip/set-module-64"
+    },
+    "rms_url" : {
+        "ip" : "192.168.2.210",
+        "data_url" : "http://%ip/get-cms-data",
+        "address_url" : "http://%ip/set-addressing",
+        "data_collection_url" : "http://%ip/set-data-collection",
+        "frame_url" : "http://%ip/set-frame",
+        "cms_url" : "http://%ip/set-cms-code",
+        "base_url" : "http://%ip/set-base-code",
+        "mcu_url" : "http://%ip/set-mcu-code",
+        "site_url" : "http://%ip/set-site-location",
+        "restart_cms_url" : "http://%ip/restart-cms",
+        "restart_rms_url" : "http://%ip/restart"
+    },
+    "app_url" : {
+        "ip" : "192.168.2.112:8626",
+        "parameter_url" : "http://%ip/cycling-station"
+    },
+    "inverter_url" : 
+    [
+        {
+            "ip" : "192.168.2.201",
+            "data_url" : "http://%ip/get-detail-data"
+        }
+    ]
+}
