@@ -58,7 +58,7 @@ class MainScreen(qtw.QMainWindow) :
         self.lastVoltage = 0
         self.numberOfData = 0
         self.deviceCount = 0
-        self.currentBatteryData = []
+        self.currentBatteryData : list[dict] = []
         self.grafanaUrlList = [
             "http://192.168.2.25:3000/d/DZJsQrAVk/cycling-station-pack-1?orgId=1&refresh=5s",
             "http://192.168.2.25:3000/d/xXQnzCAVk/cycling-station-pack-2?orgId=1&refresh=5s",
@@ -124,6 +124,7 @@ class MainScreen(qtw.QMainWindow) :
         self.ui.homeWindow.setupUi(self)
         self.addCustomWidget()
         self.activeWidget = self.getCurrentWidget()
+        print(self.getCurrentIndex())
         self.ui.homeWindow.tabWidget.currentChanged.connect(self.tabIndexChanged)
 
         self.__firstRender()
@@ -132,10 +133,10 @@ class MainScreen(qtw.QMainWindow) :
         tabCustom : list[MainInfoWindowUi] = []
         for x in range(self.deviceCount) :
             window = MainInfoWindowUi()
-            label = "window_%i"%(x)
+            label = "window_%i"%(x+1)
             window.setObjectName(label)
-            tabName = "RMS %i"%(x)
-            print(tabName)
+            tabName = "RMS %i"%(x+1)
+            # print(tabName)
             self.ui.homeWindow.tabWidget.addTab(window, tabName)
             tabCustom.append(window)
             for p in window.packList :
@@ -177,6 +178,9 @@ class MainScreen(qtw.QMainWindow) :
 
         self.ui.homeWindow.horizontalLayout.addWidget(self.ui.homeWindow.tabWidget)
 
+    def getWidget(self, index : int) -> MainInfoWindowUi :
+        return self.ui.homeWindow.tabWidget.widget(index)
+
     def getCurrentWidget(self) -> MainInfoWindowUi :
         return self.ui.homeWindow.tabWidget.currentWidget()
     
@@ -190,27 +194,39 @@ class MainScreen(qtw.QMainWindow) :
 
     def eventFilter(self, object, event : qtc.QEvent) -> bool:
         number = 0
+        index = self.getCurrentIndex() + 1
+        data : BatteryData = None
+        for x in self.currentBatteryData :
+            if x['index'] == index :
+                data : list[BatteryData] = x['data']
+                break
+        
+        if not data :
+            return False
+
         if not self.currentBatteryData :
             return False
         if (event.type() == qtc.QEvent.Enter) :
             for x in self.activeWidget.packList : 
                 if object is x:
-                    self.activeWidget.homeWindow.framelineEdit.setText(self.currentBatteryData[number].frameName)
-                    self.activeWidget.homeWindow.cmscodelineEdit.setText(self.currentBatteryData[number].cmsCode)
-                    self.activeWidget.homeWindow.basecodelineEdit.setText(self.currentBatteryData[number].baseCode)
-                    self.activeWidget.homeWindow.mcucodelineEdit.setText(self.currentBatteryData[number].mcuCode)
-                    self.activeWidget.homeWindow.sitelocationlineEdit.setText(self.currentBatteryData[number].siteLocation)
-                    self.activeWidget.homeWindow.bidlineEdit.setText(str(self.currentBatteryData[number].bid))
-                    if(self.currentBatteryData[number].wakeStatus) :
+                    self.activeWidget.homeWindow.framelineEdit.setText(data[number].frameName)
+                    self.activeWidget.homeWindow.cmscodelineEdit.setText(data[number].cmsCode)
+                    self.activeWidget.homeWindow.basecodelineEdit.setText(data[number].baseCode)
+                    self.activeWidget.homeWindow.mcucodelineEdit.setText(data[number].mcuCode)
+                    self.activeWidget.homeWindow.sitelocationlineEdit.setText(data[number].siteLocation)
+                    self.activeWidget.homeWindow.bidlineEdit.setText(str(data[number].bid))
+                    if(data[number].wakeStatus) :
                         self.activeWidget.homeWindow.statuslineEdit.setText("Wake")
                     else :
                         self.activeWidget.homeWindow.statuslineEdit.setText("Sleep")
-                    if(self.currentBatteryData[number].doorStatus) :
+                    if(data[number].doorStatus) :
                         self.activeWidget.homeWindow.doorlineEdit.setText("Closed")
                     else :
                         self.activeWidget.homeWindow.doorlineEdit.setText("Opened")
-                    totalPack = round(sum(self.currentBatteryData[number].vpack)/1000,1)
+                    totalPack = round(sum(data[number].vpack)/1000,1)
+                    content = round(100*(totalPack - 80) / (112-80),1)
                     self.activeWidget.homeWindow.packVoltage.display(totalPack)
+                    self.activeWidget.homeWindow.packContent.display(content)
                     return True
                 number += 1
         elif event.type() == qtc.QEvent.Leave:
@@ -223,6 +239,7 @@ class MainScreen(qtw.QMainWindow) :
             self.activeWidget.homeWindow.statuslineEdit.clear()
             self.activeWidget.homeWindow.doorlineEdit.clear()
             self.activeWidget.homeWindow.packVoltage.display(0)
+            self.activeWidget.homeWindow.packContent.display(0)
         return False
             
     def inverterClicked(self) :
@@ -230,11 +247,25 @@ class MainScreen(qtw.QMainWindow) :
         self.inverterUi.show()
 
     def rmsClicked(self) :
+        activeWidgetIndex = self.getCurrentIndex()
+        f = open(os.path.join(RESOURCES_DIR,'resources', 'config_test.json'))
+        data = json.load(f)
+        arrData = data["ip_list"][activeWidgetIndex]
+        ip = arrData['rms_url']['ip']
         self.rmsUi.close()
+        self.rmsUi.updateIpLineEdit(ip)
+        self.rmsUi.setActiveWidgetIndex(activeWidgetIndex)
         self.rmsUi.show()
 
     def chargerClicked(self) :
         self.chargerUi.close()
+        activeWidgetIndex = self.getCurrentIndex()
+        f = open(os.path.join(RESOURCES_DIR,'resources', 'config_test.json'))
+        data = json.load(f)
+        arrData = data["ip_list"][activeWidgetIndex]
+        ip = arrData['charger_url']['ip']
+        self.chargerUi.updateIpLineEdit(ip)
+        self.chargerUi.setActiveWidgetIndex(activeWidgetIndex)
         self.chargerUi.show()
 
     def startDataClicked(self, value : int) :
@@ -317,26 +348,51 @@ class MainScreen(qtw.QMainWindow) :
         print("Min Temperature : ", self.minTemperature)
 
 
-    def updateFailed(self, failedToGetData : int) :
+    def updateFailed(self, failedToGetData : int, dataIndex : int) :
+        widget = self.getWidget(dataIndex-1)
         if(failedToGetData) :
-            self.activeWidget.homeWindow.packstatus1.setStyleSheet("QPushButton{\n	border-radius : 8px;\n	background-color: rgb(0, 0, 0);\n}")
-            self.activeWidget.homeWindow.packstatus2.setStyleSheet("QPushButton{\n	border-radius : 8px;\n	background-color: rgb(0, 0, 0);\n}")
-            self.activeWidget.homeWindow.packstatus3.setStyleSheet("QPushButton{\n	border-radius : 8px;\n	background-color: rgb(0, 0, 0);\n}")
-            self.activeWidget.homeWindow.packstatus4.setStyleSheet("QPushButton{\n	border-radius : 8px;\n	background-color: rgb(0, 0, 0);\n}")
-            self.activeWidget.homeWindow.packstatus5.setStyleSheet("QPushButton{\n	border-radius : 8px;\n	background-color: rgb(0, 0, 0);\n}")
-            self.activeWidget.homeWindow.packstatus6.setStyleSheet("QPushButton{\n	border-radius : 8px;\n	background-color: rgb(0, 0, 0);\n}")
-            self.activeWidget.homeWindow.packstatus7.setStyleSheet("QPushButton{\n	border-radius : 8px;\n	background-color: rgb(0, 0, 0);\n}")
-            self.activeWidget.homeWindow.packstatus8.setStyleSheet("QPushButton{\n	border-radius : 8px;\n	background-color: rgb(0, 0, 0);\n}")
+            for x in widget.statusList :
+                x.setStyleSheet("QPushButton{\n	border-radius : 8px;\n	background-color: rgb(0, 0, 0);\n}")
+            # self.activeWidget.homeWindow.packstatus1.setStyleSheet("QPushButton{\n	border-radius : 8px;\n	background-color: rgb(0, 0, 0);\n}")
+            # self.activeWidget.homeWindow.packstatus2.setStyleSheet("QPushButton{\n	border-radius : 8px;\n	background-color: rgb(0, 0, 0);\n}")
+            # self.activeWidget.homeWindow.packstatus3.setStyleSheet("QPushButton{\n	border-radius : 8px;\n	background-color: rgb(0, 0, 0);\n}")
+            # self.activeWidget.homeWindow.packstatus4.setStyleSheet("QPushButton{\n	border-radius : 8px;\n	background-color: rgb(0, 0, 0);\n}")
+            # self.activeWidget.homeWindow.packstatus5.setStyleSheet("QPushButton{\n	border-radius : 8px;\n	background-color: rgb(0, 0, 0);\n}")
+            # self.activeWidget.homeWindow.packstatus6.setStyleSheet("QPushButton{\n	border-radius : 8px;\n	background-color: rgb(0, 0, 0);\n}")
+            # self.activeWidget.homeWindow.packstatus7.setStyleSheet("QPushButton{\n	border-radius : 8px;\n	background-color: rgb(0, 0, 0);\n}")
+            # self.activeWidget.homeWindow.packstatus8.setStyleSheet("QPushButton{\n	border-radius : 8px;\n	background-color: rgb(0, 0, 0);\n}")
 
+    def batteryDataReady(self, batteryData : list[BatteryData], dataIndex : int, ipName : str) :
+        isFound = False
+        for x in self.currentBatteryData :
+            if x['index'] == dataIndex :
+                x['data'] = batteryData.copy()
+                isFound = True
+                break
 
-    def batteryDataReady(self, batteryData : list[BatteryData], dataIndex : int) :
-        if (self.getCurrentIndex() != dataIndex) :
-            return
-        self.currentBatteryData = batteryData.copy()
-        for dat in batteryData :
+        if (not isFound) :
+            data = {
+                'index' : dataIndex,
+                'data' : batteryData.copy()
+            }    
+            self.currentBatteryData.append(data)
+
+        # print(len(self.currentBatteryData))
+        index = dataIndex-1
+        widget = self.getWidget(index)
+        tabBar = self.ui.homeWindow.tabWidget.tabBar()
+        widget.homeWindow.ipAddressLineEdit.setText(ipName)
+        # print("Index : %i" % (dataIndex))
+        statusLed : qtw.QPushButton
+        statusVcell = True
+        statusTemperature = True
+        tabBar.setTabText(index, ipName)
+        for dat in batteryData :            
+            # print(dat.vcell)
+            # print(dat.vpack)
+            # print(dat.temperature)
             isVcellOk = False
             isTemperatureOk = False
-            
             if(dat.bid <= 0) :
                 continue
             
@@ -345,72 +401,87 @@ class MainScreen(qtw.QMainWindow) :
                     isVcellOk = True
                 else :
                     isVcellOk = False
+                    statusVcell = False
                     break
 
             if not isVcellOk :
-                if dat.bid == 1 :
-                    self.activeWidget.homeWindow.packstatus1.setStyleSheet("QPushButton{\n	border-radius : 8px;\n	background-color: rgb(255, 0, 0);\n}")
-                elif dat.bid == 2 :
-                    self.activeWidget.homeWindow.packstatus2.setStyleSheet("QPushButton{\n	border-radius : 8px;\n	background-color: rgb(255, 0, 0);\n}")
-                elif dat.bid == 3 :
-                    self.activeWidget.homeWindow.packstatus3.setStyleSheet("QPushButton{\n	border-radius : 8px;\n	background-color: rgb(255, 0, 0);\n}")
-                elif dat.bid == 4 :
-                    self.activeWidget.homeWindow.packstatus4.setStyleSheet("QPushButton{\n	border-radius : 8px;\n	background-color: rgb(255, 0, 0);\n}")
-                elif dat.bid == 5 :
-                    self.activeWidget.homeWindow.packstatus5.setStyleSheet("QPushButton{\n	border-radius : 8px;\n	background-color: rgb(255, 0, 0);\n}")
-                elif dat.bid == 6 :
-                    self.activeWidget.homeWindow.packstatus6.setStyleSheet("QPushButton{\n	border-radius : 8px;\n	background-color: rgb(255, 0, 0);\n}")
-                elif dat.bid == 7 :
-                    self.activeWidget.homeWindow.packstatus7.setStyleSheet("QPushButton{\n	border-radius : 8px;\n	background-color: rgb(255, 0, 0);\n}")
-                elif dat.bid == 8 :
-                    self.activeWidget.homeWindow.packstatus8.setStyleSheet("QPushButton{\n	border-radius : 8px;\n	background-color: rgb(255, 0, 0);\n}")
+                statusLed = widget.statusList[dat.bid-1]
+                statusLed.setStyleSheet("QPushButton{\n	border-radius : 8px;\n	background-color: rgb(255, 0, 0);\n}")
+                tabBar.setTabTextColor(index, qtg.QColor(255, 0, 0))
                 continue
+                # if dat.bid == 1 :
+                #     widget.homeWindow.packstatus1.setStyleSheet("QPushButton{\n	border-radius : 8px;\n	background-color: rgb(255, 0, 0);\n}")
+                # elif dat.bid == 2 :
+                #     self.activeWidget.homeWindow.packstatus2.setStyleSheet("QPushButton{\n	border-radius : 8px;\n	background-color: rgb(255, 0, 0);\n}")
+                # elif dat.bid == 3 :
+                #     self.activeWidget.homeWindow.packstatus3.setStyleSheet("QPushButton{\n	border-radius : 8px;\n	background-color: rgb(255, 0, 0);\n}")
+                # elif dat.bid == 4 :
+                #     self.activeWidget.homeWindow.packstatus4.setStyleSheet("QPushButton{\n	border-radius : 8px;\n	background-color: rgb(255, 0, 0);\n}")
+                # elif dat.bid == 5 :
+                #     self.activeWidget.homeWindow.packstatus5.setStyleSheet("QPushButton{\n	border-radius : 8px;\n	background-color: rgb(255, 0, 0);\n}")
+                # elif dat.bid == 6 :
+                #     self.activeWidget.homeWindow.packstatus6.setStyleSheet("QPushButton{\n	border-radius : 8px;\n	background-color: rgb(255, 0, 0);\n}")
+                # elif dat.bid == 7 :
+                #     self.activeWidget.homeWindow.packstatus7.setStyleSheet("QPushButton{\n	border-radius : 8px;\n	background-color: rgb(255, 0, 0);\n}")
+                # elif dat.bid == 8 :
+                #     self.activeWidget.homeWindow.packstatus8.setStyleSheet("QPushButton{\n	border-radius : 8px;\n	background-color: rgb(255, 0, 0);\n}")
+                # continue
 
             for t in dat.temperature :
                 if (t > self.minTemperature and t < self.maxTemperature) :
                     isTemperatureOk = True
                 else :
                     isTemperatureOk = False
+                    statusTemperature = False
                     break
 
             if not isTemperatureOk :
-                if dat.bid == 1 :
-                    self.activeWidget.homeWindow.packstatus1.setStyleSheet("QPushButton{\n	border-radius : 8px;\n	background-color: rgb(255, 0, 0);\n}")
-                elif dat.bid == 2 :
-                    self.activeWidget.homeWindow.packstatus2.setStyleSheet("QPushButton{\n	border-radius : 8px;\n	background-color: rgb(255, 0, 0);\n}")
-                elif dat.bid == 3 :
-                    self.activeWidget.homeWindow.packstatus3.setStyleSheet("QPushButton{\n	border-radius : 8px;\n	background-color: rgb(255, 0, 0);\n}")
-                elif dat.bid == 4 :
-                    self.activeWidget.homeWindow.packstatus4.setStyleSheet("QPushButton{\n	border-radius : 8px;\n	background-color: rgb(255, 0, 0);\n}")
-                elif dat.bid == 5 :
-                    self.activeWidget.homeWindow.packstatus5.setStyleSheet("QPushButton{\n	border-radius : 8px;\n	background-color: rgb(255, 0, 0);\n}")
-                elif dat.bid == 6 :
-                    self.activeWidget.homeWindow.packstatus6.setStyleSheet("QPushButton{\n	border-radius : 8px;\n	background-color: rgb(255, 0, 0);\n}")
-                elif dat.bid == 7 :
-                    self.activeWidget.homeWindow.packstatus7.setStyleSheet("QPushButton{\n	border-radius : 8px;\n	background-color: rgb(255, 0, 0);\n}")
-                elif dat.bid == 8 :
-                    self.activeWidget.homeWindow.packstatus8.setStyleSheet("QPushButton{\n	border-radius : 8px;\n	background-color: rgb(255, 0, 0);\n}")
+                statusLed = widget.statusList[dat.bid-1]
+                statusLed.setStyleSheet("QPushButton{\n	border-radius : 8px;\n	background-color: rgb(255, 0, 0);\n}")
+                tabBar.setTabTextColor(index, qtg.QColor(255, 0, 0))
                 continue
+                # if dat.bid == 1 :
+                #     self.activeWidget.homeWindow.packstatus1.setStyleSheet("QPushButton{\n	border-radius : 8px;\n	background-color: rgb(255, 0, 0);\n}")
+                # elif dat.bid == 2 :
+                #     self.activeWidget.homeWindow.packstatus2.setStyleSheet("QPushButton{\n	border-radius : 8px;\n	background-color: rgb(255, 0, 0);\n}")
+                # elif dat.bid == 3 :
+                #     self.activeWidget.homeWindow.packstatus3.setStyleSheet("QPushButton{\n	border-radius : 8px;\n	background-color: rgb(255, 0, 0);\n}")
+                # elif dat.bid == 4 :
+                #     self.activeWidget.homeWindow.packstatus4.setStyleSheet("QPushButton{\n	border-radius : 8px;\n	background-color: rgb(255, 0, 0);\n}")
+                # elif dat.bid == 5 :
+                #     self.activeWidget.homeWindow.packstatus5.setStyleSheet("QPushButton{\n	border-radius : 8px;\n	background-color: rgb(255, 0, 0);\n}")
+                # elif dat.bid == 6 :
+                #     self.activeWidget.homeWindow.packstatus6.setStyleSheet("QPushButton{\n	border-radius : 8px;\n	background-color: rgb(255, 0, 0);\n}")
+                # elif dat.bid == 7 :
+                #     self.activeWidget.homeWindow.packstatus7.setStyleSheet("QPushButton{\n	border-radius : 8px;\n	background-color: rgb(255, 0, 0);\n}")
+                # elif dat.bid == 8 :
+                #     self.activeWidget.homeWindow.packstatus8.setStyleSheet("QPushButton{\n	border-radius : 8px;\n	background-color: rgb(255, 0, 0);\n}")
+                # continue
             
-            if dat.bid == 1 :
-                self.activeWidget.homeWindow.packstatus1.setStyleSheet("QPushButton{\n	border-radius : 8px;\n	background-color: rgb(0, 255, 0);\n}")
-            elif dat.bid == 2 :
-                self.activeWidget.homeWindow.packstatus2.setStyleSheet("QPushButton{\n	border-radius : 8px;\n	background-color: rgb(0, 255, 0);\n}")
-            elif dat.bid == 3 :
-                self.activeWidget.homeWindow.packstatus3.setStyleSheet("QPushButton{\n	border-radius : 8px;\n	background-color: rgb(0, 255, 0);\n}")
-            elif dat.bid == 4 :
-                self.activeWidget.homeWindow.packstatus4.setStyleSheet("QPushButton{\n	border-radius : 8px;\n	background-color: rgb(0, 255, 0);\n}")
-            elif dat.bid == 5 :
-                self.activeWidget.homeWindow.packstatus5.setStyleSheet("QPushButton{\n	border-radius : 8px;\n	background-color: rgb(0, 255, 0);\n}")
-            elif dat.bid == 6 :
-                self.activeWidget.homeWindow.packstatus6.setStyleSheet("QPushButton{\n	border-radius : 8px;\n	background-color: rgb(0, 255, 0);\n}")
-            elif dat.bid == 7 :
-                self.activeWidget.homeWindow.packstatus7.setStyleSheet("QPushButton{\n	border-radius : 8px;\n	background-color: rgb(0, 255, 0);\n}")
-            elif dat.bid == 8 :
-                self.activeWidget.homeWindow.packstatus8.setStyleSheet("QPushButton{\n	border-radius : 8px;\n	background-color: rgb(0, 255, 0);\n}")
+            statusLed = widget.statusList[dat.bid-1]
+            statusLed.setStyleSheet("QPushButton{\n	border-radius : 8px;\n	background-color: rgb(0, 255, 0);\n}")          
+
+            # if dat.bid == 1 :
+            #     self.activeWidget.homeWindow.packstatus1.setStyleSheet("QPushButton{\n	border-radius : 8px;\n	background-color: rgb(0, 255, 0);\n}")
+            # elif dat.bid == 2 :
+            #     self.activeWidget.homeWindow.packstatus2.setStyleSheet("QPushButton{\n	border-radius : 8px;\n	background-color: rgb(0, 255, 0);\n}")
+            # elif dat.bid == 3 :
+            #     self.activeWidget.homeWindow.packstatus3.setStyleSheet("QPushButton{\n	border-radius : 8px;\n	background-color: rgb(0, 255, 0);\n}")
+            # elif dat.bid == 4 :
+            #     self.activeWidget.homeWindow.packstatus4.setStyleSheet("QPushButton{\n	border-radius : 8px;\n	background-color: rgb(0, 255, 0);\n}")
+            # elif dat.bid == 5 :
+            #     self.activeWidget.homeWindow.packstatus5.setStyleSheet("QPushButton{\n	border-radius : 8px;\n	background-color: rgb(0, 255, 0);\n}")
+            # elif dat.bid == 6 :
+            #     self.activeWidget.homeWindow.packstatus6.setStyleSheet("QPushButton{\n	border-radius : 8px;\n	background-color: rgb(0, 255, 0);\n}")
+            # elif dat.bid == 7 :
+            #     self.activeWidget.homeWindow.packstatus7.setStyleSheet("QPushButton{\n	border-radius : 8px;\n	background-color: rgb(0, 255, 0);\n}")
+            # elif dat.bid == 8 :
+            #     self.activeWidget.homeWindow.packstatus8.setStyleSheet("QPushButton{\n	border-radius : 8px;\n	background-color: rgb(0, 255, 0);\n}")
+        if(statusVcell and statusTemperature) :
+            tabBar.setTabTextColor(index, qtg.QColor(0, 255, 0))
+                
 
     def checkCharger(self, batteryData : list[BatteryData]) :
-        self.currentBatteryData = batteryData.copy()
         for dat in batteryData :
             isVcellOk = False
             isTemperatureOk = False
@@ -456,8 +527,14 @@ class MainScreen(qtw.QMainWindow) :
     def inverterDataReady(self, inverterData : list) :
         pass
     
-    def updateChargerDisplay(self, chargerData : ChargerData) :
+    def updateChargerDisplay(self, chargerData : ChargerData, dataIndex : int) :
+        # print("updated")
+        index = dataIndex - 1
+        indexToUpdate = index - 1
         if(chargerData.subAddress < self.lastSubAddress) :
+            if (indexToUpdate < 0) :
+                indexToUpdate = self.deviceCount-1
+            widget = self.getWidget(indexToUpdate)
             voltage = self.chargerVoltage / 10
             totalCurrent = self.chargerTotalCurrent / 100
             totalPower = self.chargerTotalPower
@@ -465,23 +542,23 @@ class MainScreen(qtw.QMainWindow) :
             value = round(voltage)
             digitCount = self.digitCount(value)
             if(digitCount < 3) :
-                self.activeWidget.homeWindow.chargerVoltage.display(round(voltage, 3 - digitCount))
+                widget.homeWindow.chargerVoltage.display(round(voltage, 3 - digitCount))
             else :
-                self.activeWidget.homeWindow.chargerVoltage.display(round(voltage))
+                widget.homeWindow.chargerVoltage.display(round(voltage))
 
             value = round(totalCurrent)
             digitCount = self.digitCount(value)
             if(digitCount < 3) :
-                self.activeWidget.homeWindow.chargerCurrent.display(round(totalCurrent, 3 - digitCount))
+                widget.homeWindow.chargerCurrent.display(round(totalCurrent, 3 - digitCount))
             else :
-                self.activeWidget.homeWindow.chargerCurrent.display(round(totalCurrent))
+                widget.homeWindow.chargerCurrent.display(round(totalCurrent))
 
             value = round(totalPower)
             digitCount = self.digitCount(value)
             if(digitCount < 3) :
-                self.activeWidget.homeWindow.chargerPower.display(round(totalPower, 3 - digitCount))
+                widget.homeWindow.chargerPower.display(round(totalPower, 3 - digitCount))
             else :
-                self.activeWidget.homeWindow.chargerPower.display(round(totalPower))
+                widget.homeWindow.chargerPower.display(round(totalPower))
             self.lastVoltage = 0
             self.chargerTotalCurrent = 0
             self.chargerTotalPower = 0
@@ -494,10 +571,14 @@ class MainScreen(qtw.QMainWindow) :
                 self.chargerVoltage = self.lastVoltage
             self.chargerTotalPower += (chargerData.voltage / 10 * chargerData.current / 100) / 1000 #in Kw
             self.chargerTotalCurrent += chargerData.current
+            # print("Current : ", chargerData.current)
+            # print("Total Current : ", self.chargerTotalCurrent)
         self.lastSubAddress = chargerData.subAddress
 
-    def updateInverterDisplay(self, inverterData : list[InverterData]) :
+    def updateInverterDisplay(self, inverterData : list[InverterData], dataIndex : int) :
         print("update inverter display")
+        index = dataIndex-1
+        widget = self.getWidget(index)
         data = inverterData.copy()
         lastVoltage = 0
         totalCurrent = 0
@@ -513,26 +594,26 @@ class MainScreen(qtw.QMainWindow) :
         value = round(lastVoltage)
         digitCount = self.digitCount(value)
         if(digitCount < 3) :
-            self.activeWidget.homeWindow.bdiVoltage.display(round(lastVoltage, 3 - digitCount))
+            widget.homeWindow.bdiVoltage.display(round(lastVoltage, 3 - digitCount))
         else :
-            self.activeWidget.homeWindow.bdiVoltage.display(round(lastVoltage))
+            widget.homeWindow.bdiVoltage.display(round(lastVoltage))
 
         value = round(totalCurrent)
         digitCount = self.digitCount(value)
         if(digitCount < 3) :
-            self.activeWidget.homeWindow.bdiCurrent.display(round(totalCurrent, 3 - digitCount))
+            widget.homeWindow.bdiCurrent.display(round(totalCurrent, 3 - digitCount))
         else :
-            self.activeWidget.homeWindow.bdiCurrent.display(round(totalCurrent))
+            widget.homeWindow.bdiCurrent.display(round(totalCurrent))
 
         value = round(totalPower)
         digitCount = self.digitCount(value)
         if(digitCount < 3) :
-            self.activeWidget.homeWindow.bdiPower.display(round(totalPower, 3 - digitCount))
+            widget.homeWindow.bdiPower.display(round(totalPower, 3 - digitCount))
         else :
-            self.activeWidget.homeWindow.bdiPower.display(round(totalPower))
+            widget.homeWindow.bdiPower.display(round(totalPower))
 
     def updateLcd(self, batteryData : list[BatteryData], dataIndex : int) :
-        if (self.getCurrentIndex() != dataIndex) :
+        if (self.getCurrentIndex() != (dataIndex - 1)) :
             return
         
         for dat in batteryData :

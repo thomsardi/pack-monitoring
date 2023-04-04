@@ -13,7 +13,7 @@ from ..definition import RESOURCES_DIR
 
 class InverterRequest(qtc.QThread, qtc.QObject):
     requestResponse = qtc.pyqtSignal(str)
-    inverterData = qtc.pyqtSignal(list)
+    inverterData = qtc.pyqtSignal(list, int)
     status = qtc.pyqtSignal(int)
     def __init__(self):
         threading.Thread.__init__(self)
@@ -22,6 +22,7 @@ class InverterRequest(qtc.QThread, qtc.QObject):
         self.commandList = []
         self.isRun = False
         self.data = []
+        self.lastIndex = 0
 
     def run(self) :
         while self.isRun :
@@ -46,15 +47,21 @@ class InverterRequest(qtc.QThread, qtc.QObject):
                     print("Inverter Request Failed")
                 isRequest = True
             else :
-                f = open(os.path.join(RESOURCES_DIR,'resources', 'config.json'))
+                f = open(os.path.join(RESOURCES_DIR,'resources', 'config_test.json'))
                 data = json.load(f)
+                totalSize = len(data["ip_list"])
+                if (self.lastIndex >= totalSize) :
+                    self.lastIndex = 0
+                arrData = data["ip_list"][self.lastIndex]
+                currIndex = arrData["number"]
+                
                 url_list = []
-                url_list = data['inverter_url']
+                url_list = arrData['inverter_url']
                 for list in url_list :
                     ip = str(list['ip'])
                     url = str(list['data_url'])
                     url = url.replace("%ip", ip)
-                    print("Send Get Request to Url : ", url)
+                    # print("Send Get Request to Url : ", url)
                     try :
                         r = requests.get(url, timeout = 1)
                         response = r.json()
@@ -63,18 +70,20 @@ class InverterRequest(qtc.QThread, qtc.QObject):
                         data = parser.parseJson(jsonInput)
                         response = json.dumps(response)
                         response += '\n'
-                        print("Inverter Request Success")
+                        # print("Inverter Request Success")
                         self.data.append(data)
                     except :
-                        print("Inverter Request Failed")
+                        pass
+                        # print("Inverter Request Failed")
             if(self.data) :
-                self.inverterData.emit(self.data)
+                self.inverterData.emit(self.data, currIndex)
                 self.data.clear()
             # self.requestResponse.emit(response)
             if(isRequest) :
                 time.sleep(0.1)
             else :
                 time.sleep(1)
+                self.lastIndex += 1
 
     def startInverter(self, value : int, url : str) -> Command:
         data =  { 'start' : value

@@ -18,6 +18,7 @@ class RmsWindow(qtw.QWidget) :
     temperatureParameter = qtc.pyqtSignal(TemperatureParameter)
     def __init__(self, *args, **kwargs) -> None:
         super().__init__()
+        self.activeWidgetIndex = 0
         self.ui = Ui_RmsWindow()
         self.ui.setupUi(self)
         self.ui.addresspushButton.clicked.connect(self.addressClicked)
@@ -34,10 +35,17 @@ class RmsWindow(qtw.QWidget) :
         self.ui.temperatureapplypushButton.clicked.connect(self.temperatureParameterClicked)
 
     def addressClicked(self) :
-        f = open(os.path.join(RESOURCES_DIR,'resources', 'config.json'))
+        f = open(os.path.join(RESOURCES_DIR,'resources', 'config_test.json'))
         data = json.load(f)
-        ip = data['rms_url']['ip']
-        url = str(data['rms_url']['address_url'])
+        arrData = data['ip_list']
+        url : str = ""
+        ip : str = ""
+        for x in arrData :
+            if x['number'] == self.activeWidgetIndex+1 :
+                url = x['rms_url']['address_url']
+                ip = x['rms_url']['ip']
+                break
+
         url = url.replace("%ip", ip)
         command = Command()
         r = RmsRequest()
@@ -45,10 +53,17 @@ class RmsWindow(qtw.QWidget) :
         self.command.emit(command)
     
     def startDataClicked(self) :
-        f = open(os.path.join(RESOURCES_DIR,'resources', 'config.json'))
+        f = open(os.path.join(RESOURCES_DIR,'resources', 'config_test.json'))
         data = json.load(f)
-        ip = data['rms_url']['ip']
-        url = str(data['rms_url']['data_collection_url'])
+        arrData = data['ip_list']
+        url : str = ""
+        ip : str = ""
+        for x in arrData :
+            if x['number'] == self.activeWidgetIndex+1 :
+                url = x['rms_url']['data_collection_url']
+                ip = x['rms_url']['ip']
+                break
+
         url = url.replace("%ip", ip)
         command = Command()
         r = RmsRequest()
@@ -56,10 +71,17 @@ class RmsWindow(qtw.QWidget) :
         self.command.emit(command)
 
     def stopDataClicked(self) :
-        f = open(os.path.join(RESOURCES_DIR,'resources', 'config.json'))
+        f = open(os.path.join(RESOURCES_DIR,'resources', 'config_test.json'))
         data = json.load(f)
-        ip = data['rms_url']['ip']
-        url = str(data['rms_url']['data_collection_url'])
+        arrData = data['ip_list']
+        url : str = ""
+        ip : str = ""
+        for x in arrData :
+            if x['number'] == self.activeWidgetIndex+1 :
+                url = x['rms_url']['data_collection_url']
+                ip = x['rms_url']['ip']
+                break
+        
         url = url.replace("%ip", ip)
         command = Command()
         r = RmsRequest()
@@ -71,10 +93,18 @@ class RmsWindow(qtw.QWidget) :
         code = self.ui.framenamelineEdit.text()
         if (code == "") :
             return
-        f = open(os.path.join(RESOURCES_DIR,'resources', 'config.json'))
+        
+        f = open(os.path.join(RESOURCES_DIR,'resources', 'config_test.json'))
         data = json.load(f)
-        ip = data['rms_url']['ip']
-        url = str(data['rms_url']['frame_url'])
+        arrData = data['ip_list']
+        url : str = ""
+        ip : str = ""
+        for x in arrData :
+            if x['number'] == self.activeWidgetIndex+1 :
+                url = x['rms_url']['frame_url']
+                ip = x['rms_url']['ip']
+                break
+        
         url = url.replace("%ip", ip)
         command = Command()
         r = RmsRequest()
@@ -86,10 +116,17 @@ class RmsWindow(qtw.QWidget) :
         code = self.ui.cmscodelineEdit.text()
         if (code == "") :
             return
-        f = open(os.path.join(RESOURCES_DIR,'resources', 'config.json'))
+        f = open(os.path.join(RESOURCES_DIR,'resources', 'config_test.json'))
         data = json.load(f)
-        ip = data['rms_url']['ip']
-        url = str(data['rms_url']['cms_url'])
+        arrData = data['ip_list']
+        url : str = ""
+        ip : str = ""
+        for x in arrData :
+            if x['number'] == self.activeWidgetIndex+1 :
+                url = x['rms_url']['cms_url']
+                ip = x['rms_url']['ip']
+                break
+        
         url = url.replace("%ip", ip)
         command = Command()
         r = RmsRequest()
@@ -101,10 +138,17 @@ class RmsWindow(qtw.QWidget) :
         code = self.ui.basecodelineEdit.text()
         if (code == "") :
             return
-        f = open(os.path.join(RESOURCES_DIR,'resources', 'config.json'))
+        f = open(os.path.join(RESOURCES_DIR,'resources', 'config_test.json'))
         data = json.load(f)
-        ip = data['rms_url']['ip']
-        url = str(data['rms_url']['base_url'])
+        arrData = data['ip_list']
+        url : str = ""
+        ip : str = ""
+        for x in arrData :
+            if x['number'] == self.activeWidgetIndex+1 :
+                url = x['rms_url']['base_url']
+                ip = x['rms_url']['ip']
+                break
+        
         url = url.replace("%ip", ip)
         command = Command()
         r = RmsRequest()
@@ -116,10 +160,18 @@ class RmsWindow(qtw.QWidget) :
         code = self.ui.mcucodelineEdit.text()
         if (code == "") :
             return
-        f = open(os.path.join(RESOURCES_DIR,'resources', 'config.json'))
+        
+        f = open(os.path.join(RESOURCES_DIR,'resources', 'config_test.json'))
         data = json.load(f)
-        ip = data['rms_url']['ip']
-        url = str(data['rms_url']['mcu_url'])
+        arrData = data['ip_list']
+        url : str = ""
+        ip : str = ""
+        for x in arrData :
+            if x['number'] == self.activeWidgetIndex+1 :
+                url = x['rms_url']['mcu_url']
+                ip = x['rms_url']['ip']
+                break
+
         url = url.replace("%ip", ip)
         command = Command()
         r = RmsRequest()
@@ -131,10 +183,18 @@ class RmsWindow(qtw.QWidget) :
         code = self.ui.sitelocationlineEdit.text()
         if (code == "") :
             return
-        f = open(os.path.join(RESOURCES_DIR,'resources', 'config.json'))
+        
+        f = open(os.path.join(RESOURCES_DIR,'resources', 'config_test.json'))
         data = json.load(f)
-        ip = data['rms_url']['ip']
-        url = str(data['rms_url']['site_url'])
+        arrData = data['ip_list']
+        url : str = ""
+        ip : str = ""
+        for x in arrData :
+            if x['number'] == self.activeWidgetIndex+1 :
+                url = x['rms_url']['site_url']
+                ip = x['rms_url']['ip']
+                break
+
         url = url.replace("%ip", ip)
         command = Command()
         r = RmsRequest()
@@ -142,10 +202,17 @@ class RmsWindow(qtw.QWidget) :
         self.command.emit(command)
     
     def restartCmsClicked(self) :
-        f = open(os.path.join(RESOURCES_DIR,'resources', 'config.json'))
+        f = open(os.path.join(RESOURCES_DIR,'resources', 'config_test.json'))
         data = json.load(f)
-        ip = data['rms_url']['ip']
-        url = str(data['rms_url']['restart_cms_url'])
+        arrData = data['ip_list']
+        url : str = ""
+        ip : str = ""
+        for x in arrData :
+            if x['number'] == self.activeWidgetIndex+1 :
+                url = x['rms_url']['restart_cms_url']
+                ip = x['rms_url']['ip']
+                break
+        
         url = url.replace("%ip", ip)
         command = Command()
         r = RmsRequest()
@@ -153,10 +220,17 @@ class RmsWindow(qtw.QWidget) :
         self.command.emit(command)
 
     def restartRmsClicked(self) :
-        f = open(os.path.join(RESOURCES_DIR,'resources', 'config.json'))
+        f = open(os.path.join(RESOURCES_DIR,'resources', 'config_test.json'))
         data = json.load(f)
-        ip = data['rms_url']['ip']
-        url = str(data['rms_url']['restart_rms_url'])
+        arrData = data['ip_list']
+        url : str = ""
+        ip : str = ""
+        for x in arrData :
+            if x['number'] == self.activeWidgetIndex+1 :
+                url = x['rms_url']['restart_rms_url']
+                ip = x['rms_url']['ip']
+                break
+        
         url = url.replace("%ip", ip)
         command = Command()
         r = RmsRequest()
@@ -178,6 +252,12 @@ class RmsWindow(qtw.QWidget) :
         v.max = maxVal
         v.min = minVal
         self.temperatureParameter.emit(v)
+
+    def updateIpLineEdit(self, ipName : str) :
+        self.ui.ipAddressLineEdit.setText(ipName)
+
+    def setActiveWidgetIndex(self, index) :
+        self.activeWidgetIndex = index
 
     def showMessageBox(self, status : int) :
         msg = qtw.QMessageBox()

@@ -12,9 +12,9 @@ from ..definition import RESOURCES_DIR
 
 class RmsRequest(qtc.QThread, qtc.QObject):
     requestResponse = qtc.pyqtSignal(str)
-    batteryData = qtc.pyqtSignal(list, int)
+    batteryData = qtc.pyqtSignal(list, int, str)
     status = qtc.pyqtSignal(int)
-    failedToGetData = qtc.pyqtSignal(int)
+    failedToGetData = qtc.pyqtSignal(int, int)
     def __init__(self):
         threading.Thread.__init__(self)
         qtc.QObject.__init__(self)
@@ -53,12 +53,12 @@ class RmsRequest(qtc.QThread, qtc.QObject):
                     self.lastIndex = 0
                 arrData = data["ip_list"][self.lastIndex]
                 currIndex = arrData["number"]
-                print(arrData)
+                # print(arrData)
 
                 ip = arrData['rms_url']['ip']
                 url = str(arrData['rms_url']['data_url'])
                 url = url.replace("%ip", ip)
-                print("Send Get Request to Url : ", url)
+                # print("Send Get Request to Url : ", url)
                 try :
                     r = requests.get(url, timeout = 1)
                     response = r.json()
@@ -67,19 +67,19 @@ class RmsRequest(qtc.QThread, qtc.QObject):
                     parser.parseJson(jsonInput)
                     response = json.dumps(response)
                     response += '\n'
-                    print("RMS Request Success")
+                    # print("RMS Request Success")
                     data = parser.batteryData.copy()
                     # self.batteryData.emit(parser.batteryData)
-                    self.batteryData.emit(data, currIndex-1)
-                    print("Current Index %i \n" %(currIndex))
+                    self.batteryData.emit(data, currIndex, ip)
+                    # print("Current Index %i \n" %(currIndex))
                 except :
-                    self.failedToGetData.emit(1)
-                    print("RMS Request Failed")
+                    self.failedToGetData.emit(1, currIndex)
+                    # print("RMS Request Failed")
             self.requestResponse.emit(response)
             if(isRequest) :
                 time.sleep(0.1)
             else :
-                time.sleep(0.1)
+                time.sleep(0.5)
                 self.lastIndex += 1
             
 

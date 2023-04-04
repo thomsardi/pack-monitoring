@@ -3,7 +3,7 @@
         {
             "number" : 1,
             "charger_url" : {
-                "ip" : "localhost/chargersim",
+                "ip" : "localhost/chargersim1",
                 "data_url" : "http://%ip/get-data-charger.php",
                 "voltage_url" : "http://%ip/set-voltage.php",
                 "current_url" : "http://%ip/set-current.php",
@@ -38,7 +38,7 @@
         {
             "number" : 2,
             "charger_url" : {
-                "ip" : "localhost/chargersim",
+                "ip" : "localhost/chargersim2",
                 "data_url" : "http://%ip/get-data-charger.php",
                 "voltage_url" : "http://%ip/set-voltage.php",
                 "current_url" : "http://%ip/set-current.php",
@@ -65,7 +65,7 @@
             "inverter_url" : 
             [
                 {
-                    "ip" : "localhost/invertersim1",
+                    "ip" : "localhost/invertersim2",
                     "data_url" : "http://%ip/get-detail-data.php"
                 }
             ]
@@ -73,7 +73,7 @@
         {
             "number" : 3,
             "charger_url" : {
-                "ip" : "localhost/chargersim",
+                "ip" : "localhost/chargersim3",
                 "data_url" : "http://%ip/get-data-charger.php",
                 "voltage_url" : "http://%ip/set-voltage.php",
                 "current_url" : "http://%ip/set-current.php",
@@ -100,7 +100,7 @@
             "inverter_url" : 
             [
                 {
-                    "ip" : "localhost/invertersim1",
+                    "ip" : "localhost/invertersim3",
                     "data_url" : "http://%ip/get-detail-data.php"
                 }
             ]
@@ -108,7 +108,7 @@
         {
             "number" : 4,
             "charger_url" : {
-                "ip" : "localhost/chargersim",
+                "ip" : "localhost/chargersim4",
                 "data_url" : "http://%ip/get-data-charger.php",
                 "voltage_url" : "http://%ip/set-voltage.php",
                 "current_url" : "http://%ip/set-current.php",
@@ -135,7 +135,7 @@
             "inverter_url" : 
             [
                 {
-                    "ip" : "localhost/invertersim1",
+                    "ip" : "localhost/invertersim4",
                     "data_url" : "http://%ip/get-detail-data.php"
                 }
             ]
@@ -143,7 +143,7 @@
         {
             "number" : 5,
             "charger_url" : {
-                "ip" : "localhost/chargersim",
+                "ip" : "localhost/chargersim5",
                 "data_url" : "http://%ip/get-data-charger.php",
                 "voltage_url" : "http://%ip/set-voltage.php",
                 "current_url" : "http://%ip/set-current.php",
@@ -170,7 +170,7 @@
             "inverter_url" : 
             [
                 {
-                    "ip" : "localhost/invertersim1",
+                    "ip" : "localhost/invertersim5",
                     "data_url" : "http://%ip/get-detail-data.php"
                 }
             ]
@@ -178,7 +178,7 @@
         {
             "number" : 6,
             "charger_url" : {
-                "ip" : "localhost/chargersim",
+                "ip" : "localhost/chargersim6",
                 "data_url" : "http://%ip/get-data-charger.php",
                 "voltage_url" : "http://%ip/set-voltage.php",
                 "current_url" : "http://%ip/set-current.php",
@@ -205,7 +205,7 @@
             "inverter_url" : 
             [
                 {
-                    "ip" : "localhost/invertersim1",
+                    "ip" : "localhost/invertersim6",
                     "data_url" : "http://%ip/get-detail-data.php"
                 }
             ]
@@ -213,7 +213,7 @@
         {
             "number" : 7,
             "charger_url" : {
-                "ip" : "localhost/chargersim",
+                "ip" : "localhost/chargersim7",
                 "data_url" : "http://%ip/get-data-charger.php",
                 "voltage_url" : "http://%ip/set-voltage.php",
                 "current_url" : "http://%ip/set-current.php",
@@ -240,7 +240,7 @@
             "inverter_url" : 
             [
                 {
-                    "ip" : "localhost/invertersim1",
+                    "ip" : "localhost/invertersim7",
                     "data_url" : "http://%ip/get-detail-data.php"
                 }
             ]
@@ -248,7 +248,7 @@
         {
             "number" : 8,
             "charger_url" : {
-                "ip" : "localhost/chargersim",
+                "ip" : "localhost/chargersim8",
                 "data_url" : "http://%ip/get-data-charger.php",
                 "voltage_url" : "http://%ip/set-voltage.php",
                 "current_url" : "http://%ip/set-current.php",
@@ -275,7 +275,7 @@
             "inverter_url" : 
             [
                 {
-                    "ip" : "localhost/invertersim1",
+                    "ip" : "localhost/invertersim8",
                     "data_url" : "http://%ip/get-detail-data.php"
                 }
             ]

@@ -11,7 +11,7 @@ from ..definition import RESOURCES_DIR
 
 class ChargerRequest(qtc.QThread, qtc.QObject):
     requestResponse = qtc.pyqtSignal(str)
-    chargerData = qtc.pyqtSignal(ChargerData)
+    chargerData = qtc.pyqtSignal(ChargerData, int)
     status = qtc.pyqtSignal(int)
     def __init__(self):
         threading.Thread.__init__(self)
@@ -21,6 +21,8 @@ class ChargerRequest(qtc.QThread, qtc.QObject):
         self.isRun = False
         self.currentGroup = 0
         self.currentAddress = 1
+        self.lastIndex = 0
+        self.chargerTotal = 3
 
     @property
     def rectifierGetDataUrl(self) :
@@ -52,18 +54,27 @@ class ChargerRequest(qtc.QThread, qtc.QObject):
                     print("Charger Request Failed")
                 isRequest = True
             else :
-                if(self.currentAddress > 3) :
-                    self.currentAddress = 1
-                f = open(os.path.join(RESOURCES_DIR,'resources', 'config.json'))
+                f = open(os.path.join(RESOURCES_DIR,'resources', 'config_test.json'))
                 data = json.load(f)
-                ip = data['charger_url']['ip']
-                url = str(data['charger_url']['data_url'])
+                totalSize = len(data["ip_list"])
+                
+                if(self.currentAddress > self.chargerTotal) :
+                    self.currentAddress = 1
+                    self.lastIndex += 1
+
+                if (self.lastIndex >= totalSize) :
+                    self.lastIndex = 0
+
+                arrData = data["ip_list"][self.lastIndex]
+                currIndex = arrData["number"]
+                ip = arrData['charger_url']['ip']
+                url : str = arrData['charger_url']['data_url']
                 url = url.replace("%ip", ip)
                 data = {'group' : self.currentGroup,
                         'subaddress' : self.currentAddress
                 }
-                print("Send Post Request to Url : ", url)
-                print(data)
+                # print("Send Post Request to Url : ", url)
+                # print(data)
                 try :
                     r = requests.post(url = url, json = data, timeout = 1)
                     response = r.json()
@@ -73,17 +84,19 @@ class ChargerRequest(qtc.QThread, qtc.QObject):
                     data = parser.parseJson(jsonInput)
                     response = json.dumps(response)
                     response += '\n'
-                    print("Charger Request Success")
-                    self.chargerData.emit(data)
+                    # print(response)
+                    # print("Charger Request Success")
+                    self.chargerData.emit(data, currIndex)
                 except :
-                    print("Charger Request Failed")
+                    # print("Charger Request Failed")
+                    pass
                 self.currentAddress += 1
 
             # self.requestResponse.emit(response)
             if(isRequest) :
                 time.sleep(0.1)
             else :
-                time.sleep(1)
+                time.sleep(0.5)
 
     def setVoltage(self, group : int, subAddress : int, voltage : int, url : str) -> Command:
         data =  { 'group' : group,

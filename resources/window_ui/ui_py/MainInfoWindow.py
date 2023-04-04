@@ -21,6 +21,16 @@ class MainInfoWindowUi(qtw.QWidget) :
             self.homeWindow.pack7,
             self.homeWindow.pack8,
         ]     
+        self.statusList : list[qtw.QPushButton] = [
+            self.homeWindow.packstatus1,
+            self.homeWindow.packstatus2,
+            self.homeWindow.packstatus3,
+            self.homeWindow.packstatus4,
+            self.homeWindow.packstatus5,
+            self.homeWindow.packstatus6,
+            self.homeWindow.packstatus7,
+            self.homeWindow.packstatus8,
+        ]     
 
 if __name__ == "__main__":
     import sys

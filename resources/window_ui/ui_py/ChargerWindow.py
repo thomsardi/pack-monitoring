@@ -21,12 +21,20 @@ class ChargerWindow(qtw.QWidget) :
         self.ui.chargervoltageapplypushButton.clicked.connect(self.voltageApplyClicked)
         self.ui.chargercurrentapplypushButton.clicked.connect(self.currentApplyClicked)
         self.isChargerStart = 0
+        self.activeWidgetIndex = 0
 
     def startClicked(self) :
-        f = open(os.path.join(RESOURCES_DIR,'resources', 'config.json'))
+        f = open(os.path.join(RESOURCES_DIR,'resources', 'config_test.json'))
         data = json.load(f)
-        ip = data['charger_url']['ip']
-        url = str(data['charger_url']['module32_url'])
+        arrData = data['ip_list']
+        url : str = ""
+        ip : str = ""
+        for x in arrData :
+            if x['number'] == self.activeWidgetIndex+1 :
+                url = x['charger_url']['module32_url']
+                ip = x['charger_url']['ip']
+                break
+        
         url = url.replace("%ip", ip)
         value = 0
         if(self.ui.chargercheckBox_1.isChecked()) :
@@ -48,10 +56,17 @@ class ChargerWindow(qtw.QWidget) :
             self.isChargerStart = 0
 
     def stop(self) :
-        f = open(os.path.join(RESOURCES_DIR,'resources', 'config.json'))
+        f = open(os.path.join(RESOURCES_DIR,'resources', 'config_test.json'))
         data = json.load(f)
-        ip = data['charger_url']['ip']
-        url = str(data['charger_url']['module32_url'])
+        arrData = data['ip_list']
+        url : str = ""
+        ip : str = ""
+        for x in arrData :
+            if x['number'] == self.activeWidgetIndex+1 :
+                url = x['charger_url']['module32_url']
+                ip = x['charger_url']['ip']
+                break
+        
         url = url.replace("%ip", ip)
         value = 0
         command = Command()
@@ -61,10 +76,17 @@ class ChargerWindow(qtw.QWidget) :
         self.isChargerStart = 0
     
     def voltageApplyClicked(self) :
-        f = open(os.path.join(RESOURCES_DIR,'resources', 'config.json'))
+        f = open(os.path.join(RESOURCES_DIR,'resources', 'config_test.json'))
         data = json.load(f)
-        ip = data['charger_url']['ip']
-        url = str(data['charger_url']['voltage_url'])
+        arrData = data['ip_list']
+        url : str = ""
+        ip : str = ""
+        for x in arrData :
+            if x['number'] == self.activeWidgetIndex+1 :
+                url = x['charger_url']['voltage_url']
+                ip = x['charger_url']['ip']
+                break
+        
         url = url.replace("%ip", ip)
         group = self.ui.chargervoltagegroupspinBox.value()
         subAddress = self.ui.chargervoltagesubaddressspinBox.value()
@@ -75,10 +97,17 @@ class ChargerWindow(qtw.QWidget) :
         self.command.emit(command)
 
     def currentApplyClicked(self) :
-        f = open(os.path.join(RESOURCES_DIR,'resources', 'config.json'))
+        f = open(os.path.join(RESOURCES_DIR,'resources', 'config_test.json'))
         data = json.load(f)
-        ip = data['charger_url']['ip']
-        url = str(data['charger_url']['current_url'])
+        arrData = data['ip_list']
+        url : str = ""
+        ip : str = ""
+        for x in arrData :
+            if x['number'] == self.activeWidgetIndex+1 :
+                url = x['charger_url']['current_url']
+                ip = x['charger_url']['ip']
+                break
+        
         url = url.replace("%ip", ip)
         group = self.ui.chargercurrentgroupspinBox.value()
         subAddress = self.ui.chargercurrentsubaddressspinBox.value()
@@ -87,6 +116,12 @@ class ChargerWindow(qtw.QWidget) :
         r = ChargerRequest()
         command = r.setCurrent(group, subAddress, value, url)
         self.command.emit(command)
+
+    def updateIpLineEdit(self, ipName : str) :
+        self.ui.ipAddressLineEdit.setText(ipName)
+
+    def setActiveWidgetIndex(self, index) :
+        self.activeWidgetIndex = index
 
     def showMessageBox(self, status : int) :
         msg = qtw.QMessageBox()
