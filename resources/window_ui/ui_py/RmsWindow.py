@@ -35,7 +35,7 @@ class RmsWindow(qtw.QWidget) :
         self.ui.temperatureapplypushButton.clicked.connect(self.temperatureParameterClicked)
 
     def addressClicked(self) :
-        f = open(os.path.join(RESOURCES_DIR,'resources', 'config_test.json'))
+        f = open(os.path.join(RESOURCES_DIR,'resources', 'config.json'))
         data = json.load(f)
         arrData = data['ip_list']
         url : str = ""
@@ -53,7 +53,7 @@ class RmsWindow(qtw.QWidget) :
         self.command.emit(command)
     
     def startDataClicked(self) :
-        f = open(os.path.join(RESOURCES_DIR,'resources', 'config_test.json'))
+        f = open(os.path.join(RESOURCES_DIR,'resources', 'config.json'))
         data = json.load(f)
         arrData = data['ip_list']
         url : str = ""
@@ -71,7 +71,7 @@ class RmsWindow(qtw.QWidget) :
         self.command.emit(command)
 
     def stopDataClicked(self) :
-        f = open(os.path.join(RESOURCES_DIR,'resources', 'config_test.json'))
+        f = open(os.path.join(RESOURCES_DIR,'resources', 'config.json'))
         data = json.load(f)
         arrData = data['ip_list']
         url : str = ""
@@ -94,7 +94,7 @@ class RmsWindow(qtw.QWidget) :
         if (code == "") :
             return
         
-        f = open(os.path.join(RESOURCES_DIR,'resources', 'config_test.json'))
+        f = open(os.path.join(RESOURCES_DIR,'resources', 'config.json'))
         data = json.load(f)
         arrData = data['ip_list']
         url : str = ""
@@ -116,7 +116,7 @@ class RmsWindow(qtw.QWidget) :
         code = self.ui.cmscodelineEdit.text()
         if (code == "") :
             return
-        f = open(os.path.join(RESOURCES_DIR,'resources', 'config_test.json'))
+        f = open(os.path.join(RESOURCES_DIR,'resources', 'config.json'))
         data = json.load(f)
         arrData = data['ip_list']
         url : str = ""
@@ -138,7 +138,7 @@ class RmsWindow(qtw.QWidget) :
         code = self.ui.basecodelineEdit.text()
         if (code == "") :
             return
-        f = open(os.path.join(RESOURCES_DIR,'resources', 'config_test.json'))
+        f = open(os.path.join(RESOURCES_DIR,'resources', 'config.json'))
         data = json.load(f)
         arrData = data['ip_list']
         url : str = ""
@@ -161,7 +161,7 @@ class RmsWindow(qtw.QWidget) :
         if (code == "") :
             return
         
-        f = open(os.path.join(RESOURCES_DIR,'resources', 'config_test.json'))
+        f = open(os.path.join(RESOURCES_DIR,'resources', 'config.json'))
         data = json.load(f)
         arrData = data['ip_list']
         url : str = ""
@@ -184,7 +184,7 @@ class RmsWindow(qtw.QWidget) :
         if (code == "") :
             return
         
-        f = open(os.path.join(RESOURCES_DIR,'resources', 'config_test.json'))
+        f = open(os.path.join(RESOURCES_DIR,'resources', 'config.json'))
         data = json.load(f)
         arrData = data['ip_list']
         url : str = ""
@@ -202,7 +202,7 @@ class RmsWindow(qtw.QWidget) :
         self.command.emit(command)
     
     def restartCmsClicked(self) :
-        f = open(os.path.join(RESOURCES_DIR,'resources', 'config_test.json'))
+        f = open(os.path.join(RESOURCES_DIR,'resources', 'config.json'))
         data = json.load(f)
         arrData = data['ip_list']
         url : str = ""
@@ -220,7 +220,7 @@ class RmsWindow(qtw.QWidget) :
         self.command.emit(command)
 
     def restartRmsClicked(self) :
-        f = open(os.path.join(RESOURCES_DIR,'resources', 'config_test.json'))
+        f = open(os.path.join(RESOURCES_DIR,'resources', 'config.json'))
         data = json.load(f)
         arrData = data['ip_list']
         url : str = ""

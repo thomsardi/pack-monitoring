@@ -24,7 +24,7 @@ class ChargerWindow(qtw.QWidget) :
         self.activeWidgetIndex = 0
 
     def startClicked(self) :
-        f = open(os.path.join(RESOURCES_DIR,'resources', 'config_test.json'))
+        f = open(os.path.join(RESOURCES_DIR,'resources', 'config.json'))
         data = json.load(f)
         arrData = data['ip_list']
         url : str = ""
@@ -56,7 +56,7 @@ class ChargerWindow(qtw.QWidget) :
             self.isChargerStart = 0
 
     def stop(self) :
-        f = open(os.path.join(RESOURCES_DIR,'resources', 'config_test.json'))
+        f = open(os.path.join(RESOURCES_DIR,'resources', 'config.json'))
         data = json.load(f)
         arrData = data['ip_list']
         url : str = ""
@@ -76,7 +76,7 @@ class ChargerWindow(qtw.QWidget) :
         self.isChargerStart = 0
     
     def voltageApplyClicked(self) :
-        f = open(os.path.join(RESOURCES_DIR,'resources', 'config_test.json'))
+        f = open(os.path.join(RESOURCES_DIR,'resources', 'config.json'))
         data = json.load(f)
         arrData = data['ip_list']
         url : str = ""
@@ -97,7 +97,7 @@ class ChargerWindow(qtw.QWidget) :
         self.command.emit(command)
 
     def currentApplyClicked(self) :
-        f = open(os.path.join(RESOURCES_DIR,'resources', 'config_test.json'))
+        f = open(os.path.join(RESOURCES_DIR,'resources', 'config.json'))
         data = json.load(f)
         arrData = data['ip_list']
         url : str = ""

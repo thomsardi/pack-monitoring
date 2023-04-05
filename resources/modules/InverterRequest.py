@@ -47,7 +47,7 @@ class InverterRequest(qtc.QThread, qtc.QObject):
                     print("Inverter Request Failed")
                 isRequest = True
             else :
-                f = open(os.path.join(RESOURCES_DIR,'resources', 'config_test.json'))
+                f = open(os.path.join(RESOURCES_DIR,'resources', 'config.json'))
                 data = json.load(f)
                 totalSize = len(data["ip_list"])
                 if (self.lastIndex >= totalSize) :
@@ -61,7 +61,7 @@ class InverterRequest(qtc.QThread, qtc.QObject):
                     ip = str(list['ip'])
                     url = str(list['data_url'])
                     url = url.replace("%ip", ip)
-                    # print("Send Get Request to Url : ", url)
+                    print("Send Get Request to Url : ", url)
                     try :
                         r = requests.get(url, timeout = 1)
                         response = r.json()
@@ -70,11 +70,11 @@ class InverterRequest(qtc.QThread, qtc.QObject):
                         data = parser.parseJson(jsonInput)
                         response = json.dumps(response)
                         response += '\n'
-                        # print("Inverter Request Success")
+                        print("Inverter Request Success")
                         self.data.append(data)
                     except :
-                        pass
-                        # print("Inverter Request Failed")
+                        print("Inverter Request Failed")
+                        
             if(self.data) :
                 self.inverterData.emit(self.data, currIndex)
                 self.data.clear()

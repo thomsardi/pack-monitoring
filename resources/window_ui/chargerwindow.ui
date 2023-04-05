@@ -20,8 +20,8 @@
    <string>Charger System</string>
   </property>
   <property name="windowIcon">
-   <iconset>
-    <normaloff>:/resources/icons/charger.png</normaloff>:/resources/icons/charger.png</iconset>
+   <iconset resource="../res.qrc">
+    <normaloff>:/resources/icons/charger-crop.png</normaloff>:/resources/icons/charger-crop.png</iconset>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>

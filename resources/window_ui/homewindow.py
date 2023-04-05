@@ -17,7 +17,7 @@ class Ui_HomeWindow(object):
         HomeWindow.resize(940, 660)
         HomeWindow.setMaximumSize(QtCore.QSize(940, 660))
         icon = QtGui.QIcon()
-        icon.addPixmap(QtGui.QPixmap("resources/icons/main_apps.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        icon.addPixmap(QtGui.QPixmap(":/resources/icons/monitor.ico"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         HomeWindow.setWindowIcon(icon)
         self.centralwidget = QtWidgets.QWidget(HomeWindow)
         self.centralwidget.setStyleSheet("")

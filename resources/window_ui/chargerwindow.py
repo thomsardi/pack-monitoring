@@ -17,7 +17,7 @@ class Ui_ChargerWindow(object):
         ChargerWindow.resize(456, 450)
         ChargerWindow.setMaximumSize(QtCore.QSize(456, 450))
         icon = QtGui.QIcon()
-        icon.addPixmap(QtGui.QPixmap(":/resources/icons/charger.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        icon.addPixmap(QtGui.QPixmap(":/resources/icons/charger-crop.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         ChargerWindow.setWindowIcon(icon)
         self.verticalLayout = QtWidgets.QVBoxLayout(ChargerWindow)
         self.verticalLayout.setObjectName("verticalLayout")

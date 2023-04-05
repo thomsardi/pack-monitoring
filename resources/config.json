@@ -1,34 +1,180 @@
 {
-    "charger_url" : {
-        "ip" : "localhost/chargersim",
-        "data_url" : "http://%ip/get-data-charger.php",
-        "voltage_url" : "http://%ip/set-voltage.php",
-        "current_url" : "http://%ip/set-current.php",
-        "module32_url" : "http://%ip/set-module-32.php",
-        "module64_url" : "http://%ip/set-module-64.php"
-    },
-    "rms_url" : {
-        "ip" : "localhost/rmssim",
-        "data_url" : "http://%ip/get-cms-data.php",
-        "address_url" : "http://%ip/set-addressing.php",
-        "data_collection_url" : "http://%ip/set-data-collection.php",
-        "frame_url" : "http://%ip/set-frame.php",
-        "cms_url" : "http://%ip/set-cms-code.php",
-        "base_url" : "http://%ip/set-base-code.php",
-        "mcu_url" : "http://%ip/set-mcu-code.php",
-        "site_url" : "http://%ip/set-site-location.php",
-        "restart_cms_url" : "http://%ip/restart-cms.php",
-        "restart_rms_url" : "http://%ip/restart.php"
-    },
-    "app_url" : {
-        "ip" : "localhost/appsim",
-        "parameter_url" : "http://%ip/cycling-station.php"
-    },
-    "inverter_url" : 
-    [
+    "ip_list" : [
         {
-            "ip" : "localhost/invertersim1",
-            "data_url" : "http://%ip/get-detail-data.php"
+            "number" : 1,
+            "charger_url" : {
+                "ip" : "200.10.2.150",
+                "data_url" : "http://%ip/get-data-charger",
+                "voltage_url" : "http://%ip/set-voltage",
+                "current_url" : "http://%ip/set-current",
+                "module32_url" : "http://%ip/set-module-32",
+                "module64_url" : "http://%ip/set-module-64"
+            },
+            "rms_url" : {
+                "ip" : "200.10.2.200",
+                "data_url" : "http://%ip/get-cms-data",
+                "address_url" : "http://%ip/set-addressing",
+                "data_collection_url" : "http://%ip/set-data-collection",
+                "frame_url" : "http://%ip/set-frame",
+                "cms_url" : "http://%ip/set-cms-code",
+                "base_url" : "http://%ip/set-base-code",
+                "mcu_url" : "http://%ip/set-mcu-code",
+                "site_url" : "http://%ip/set-site-location",
+                "restart_cms_url" : "http://%ip/restart-cms",
+                "restart_rms_url" : "http://%ip/restart"
+            },
+            "app_url" : {
+                "ip" : "localhost/appsim",
+                "parameter_url" : "http://%ip/cycling-station"
+            },
+            "inverter_url" : 
+            [
+                {
+                    "ip" : "localhost/invertersim1",
+                    "data_url" : "http://%ip/get-detail-data"
+                }
+            ]
+        },
+        {
+            "number" : 2,
+            "charger_url" : {
+                "ip" : "200.10.2.150",
+                "data_url" : "http://%ip/get-data-charger",
+                "voltage_url" : "http://%ip/set-voltage",
+                "current_url" : "http://%ip/set-current",
+                "module32_url" : "http://%ip/set-module-32",
+                "module64_url" : "http://%ip/set-module-64"
+            },
+            "rms_url" : {
+                "ip" : "200.10.2.211",
+                "data_url" : "http://%ip/get-cms-data",
+                "address_url" : "http://%ip/set-addressing",
+                "data_collection_url" : "http://%ip/set-data-collection",
+                "frame_url" : "http://%ip/set-frame",
+                "cms_url" : "http://%ip/set-cms-code",
+                "base_url" : "http://%ip/set-base-code",
+                "mcu_url" : "http://%ip/set-mcu-code",
+                "site_url" : "http://%ip/set-site-location",
+                "restart_cms_url" : "http://%ip/restart-cms",
+                "restart_rms_url" : "http://%ip/restart"
+            },
+            "app_url" : {
+                "ip" : "localhost/appsim",
+                "parameter_url" : "http://%ip/cycling-station"
+            },
+            "inverter_url" : 
+            [
+                {
+                    "ip" : "localhost/invertersim2",
+                    "data_url" : "http://%ip/get-detail-data"
+                }
+            ]
+        },
+        {
+            "number" : 3,
+            "charger_url" : {
+                "ip" : "200.10.2.150",
+                "data_url" : "http://%ip/get-data-charger",
+                "voltage_url" : "http://%ip/set-voltage",
+                "current_url" : "http://%ip/set-current",
+                "module32_url" : "http://%ip/set-module-32",
+                "module64_url" : "http://%ip/set-module-64"
+            },
+            "rms_url" : {
+                "ip" : "200.10.2.212",
+                "data_url" : "http://%ip/get-cms-data",
+                "address_url" : "http://%ip/set-addressing",
+                "data_collection_url" : "http://%ip/set-data-collection",
+                "frame_url" : "http://%ip/set-frame",
+                "cms_url" : "http://%ip/set-cms-code",
+                "base_url" : "http://%ip/set-base-code",
+                "mcu_url" : "http://%ip/set-mcu-code",
+                "site_url" : "http://%ip/set-site-location",
+                "restart_cms_url" : "http://%ip/restart-cms",
+                "restart_rms_url" : "http://%ip/restart"
+            },
+            "app_url" : {
+                "ip" : "localhost/appsim",
+                "parameter_url" : "http://%ip/cycling-station"
+            },
+            "inverter_url" : 
+            [
+                {
+                    "ip" : "localhost/invertersim3",
+                    "data_url" : "http://%ip/get-detail-data"
+                }
+            ]
+        },
+        {
+            "number" : 4,
+            "charger_url" : {
+                "ip" : "200.10.2.150",
+                "data_url" : "http://%ip/get-data-charger",
+                "voltage_url" : "http://%ip/set-voltage",
+                "current_url" : "http://%ip/set-current",
+                "module32_url" : "http://%ip/set-module-32",
+                "module64_url" : "http://%ip/set-module-64"
+            },
+            "rms_url" : {
+                "ip" : "200.10.2.213",
+                "data_url" : "http://%ip/get-cms-data",
+                "address_url" : "http://%ip/set-addressing",
+                "data_collection_url" : "http://%ip/set-data-collection",
+                "frame_url" : "http://%ip/set-frame",
+                "cms_url" : "http://%ip/set-cms-code",
+                "base_url" : "http://%ip/set-base-code",
+                "mcu_url" : "http://%ip/set-mcu-code",
+                "site_url" : "http://%ip/set-site-location",
+                "restart_cms_url" : "http://%ip/restart-cms",
+                "restart_rms_url" : "http://%ip/restart"
+            },
+            "app_url" : {
+                "ip" : "localhost/appsim",
+                "parameter_url" : "http://%ip/cycling-station"
+            },
+            "inverter_url" : 
+            [
+                {
+                    "ip" : "localhost/invertersim4",
+                    "data_url" : "http://%ip/get-detail-data"
+                }
+            ]
+        },
+        {
+            "number" : 5,
+            "charger_url" : {
+                "ip" : "200.10.2.150",
+                "data_url" : "http://%ip/get-data-charger",
+                "voltage_url" : "http://%ip/set-voltage",
+                "current_url" : "http://%ip/set-current",
+                "module32_url" : "http://%ip/set-module-32",
+                "module64_url" : "http://%ip/set-module-64"
+            },
+            "rms_url" : {
+                "ip" : "200.10.2.213",
+                "data_url" : "http://%ip/get-cms-data",
+                "address_url" : "http://%ip/set-addressing",
+                "data_collection_url" : "http://%ip/set-data-collection",
+                "frame_url" : "http://%ip/set-frame",
+                "cms_url" : "http://%ip/set-cms-code",
+                "base_url" : "http://%ip/set-base-code",
+                "mcu_url" : "http://%ip/set-mcu-code",
+                "site_url" : "http://%ip/set-site-location",
+                "restart_cms_url" : "http://%ip/restart-cms",
+                "restart_rms_url" : "http://%ip/restart"
+            },
+            "app_url" : {
+                "ip" : "localhost/appsim",
+                "parameter_url" : "http://%ip/cycling-station"
+            },
+            "inverter_url" : 
+            [
+                {
+                    "ip" : "localhost/invertersim5",
+                    "data_url" : "http://%ip/get-detail-data"
+                }
+            ]
         }
     ]
+    
 }

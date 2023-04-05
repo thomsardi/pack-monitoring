@@ -17,7 +17,7 @@ class Ui_InverterWindow(object):
         InverterWindow.resize(288, 352)
         InverterWindow.setMaximumSize(QtCore.QSize(2000, 2000))
         icon = QtGui.QIcon()
-        icon.addPixmap(QtGui.QPixmap(":/resources/icons/solar-inverter.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        icon.addPixmap(QtGui.QPixmap(":/resources/icons/solar-inverter-crop.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         InverterWindow.setWindowIcon(icon)
         self.verticalLayout = QtWidgets.QVBoxLayout(InverterWindow)
         self.verticalLayout.setObjectName("verticalLayout")

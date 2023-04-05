@@ -54,7 +54,7 @@ class ChargerRequest(qtc.QThread, qtc.QObject):
                     print("Charger Request Failed")
                 isRequest = True
             else :
-                f = open(os.path.join(RESOURCES_DIR,'resources', 'config_test.json'))
+                f = open(os.path.join(RESOURCES_DIR,'resources', 'config.json'))
                 data = json.load(f)
                 totalSize = len(data["ip_list"])
                 
@@ -73,8 +73,8 @@ class ChargerRequest(qtc.QThread, qtc.QObject):
                 data = {'group' : self.currentGroup,
                         'subaddress' : self.currentAddress
                 }
-                # print("Send Post Request to Url : ", url)
-                # print(data)
+                print("Send Post Request to Url : ", url)
+                print(data)
                 try :
                     r = requests.post(url = url, json = data, timeout = 1)
                     response = r.json()
@@ -85,11 +85,11 @@ class ChargerRequest(qtc.QThread, qtc.QObject):
                     response = json.dumps(response)
                     response += '\n'
                     # print(response)
-                    # print("Charger Request Success")
+                    print("Charger Request Success")
                     self.chargerData.emit(data, currIndex)
                 except :
-                    # print("Charger Request Failed")
-                    pass
+                    print("Charger Request Failed")
+                    # pass
                 self.currentAddress += 1
 
             # self.requestResponse.emit(response)

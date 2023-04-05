@@ -44,6 +44,7 @@ class MainScreen2(qtw.QMainWindow) :
 class MainScreen(qtw.QMainWindow) :
     def __init__(self, *args, **kwargs) :
         super().__init__()
+        self.tabNameList = []
         self.isChargeStart = False
         self.lastChargeStart = False
         self.__stopFlag = Event()
@@ -70,11 +71,13 @@ class MainScreen(qtw.QMainWindow) :
             "http://192.168.2.25:3000/d/4z-G4j0Vz/cycling-station-pack-8?orgId=1&refresh=5s"
         ]
         
-        f = open(os.path.join(RESOURCES_DIR,'resources', 'config_test.json'))
+        f = open(os.path.join(RESOURCES_DIR,'resources', 'config.json'))
         data = json.load(f)
         element = data["ip_list"]
         self.deviceCount = len(element)
-
+        # print(self.deviceCount)
+        for i in range(self.deviceCount) :
+            self.tabNameList.append(data['ip_list'][i]['rms_url']['ip'])
         # Window UI
         self.mainInfoWindow : list[MainInfoWindowUi] = []
         for i in range(self.deviceCount) :
@@ -124,18 +127,21 @@ class MainScreen(qtw.QMainWindow) :
         self.ui.homeWindow.setupUi(self)
         self.addCustomWidget()
         self.activeWidget = self.getCurrentWidget()
-        print(self.getCurrentIndex())
+        # print(self.getCurrentIndex())
         self.ui.homeWindow.tabWidget.currentChanged.connect(self.tabIndexChanged)
 
         self.__firstRender()
 
     def addCustomWidget(self) :
+        f = open(os.path.join(RESOURCES_DIR,'resources', 'config.json'))
+        data = json.load(f)
         tabCustom : list[MainInfoWindowUi] = []
         for x in range(self.deviceCount) :
             window = MainInfoWindowUi()
             label = "window_%i"%(x+1)
             window.setObjectName(label)
-            tabName = "RMS %i"%(x+1)
+            # tabName = "RMS %i"%(x+1)
+            tabName = self.tabNameList[x]
             # print(tabName)
             self.ui.homeWindow.tabWidget.addTab(window, tabName)
             tabCustom.append(window)
@@ -191,6 +197,7 @@ class MainScreen(qtw.QMainWindow) :
         index = self.ui.homeWindow.tabWidget.currentIndex()
         self.ui.homeWindow.tabWidget.setCurrentIndex(index)
         self.activeWidget = self.getCurrentWidget()
+        self.activeWidget.homeWindow.ipAddressLineEdit.setText(self.tabNameList[index])
 
     def eventFilter(self, object, event : qtc.QEvent) -> bool:
         number = 0
@@ -225,6 +232,8 @@ class MainScreen(qtw.QMainWindow) :
                         self.activeWidget.homeWindow.doorlineEdit.setText("Opened")
                     totalPack = round(sum(data[number].vpack)/1000,1)
                     content = round(100*(totalPack - 80) / (112-80),1)
+                    if (content < 0) :
+                        content = 0
                     self.activeWidget.homeWindow.packVoltage.display(totalPack)
                     self.activeWidget.homeWindow.packContent.display(content)
                     return True
@@ -248,7 +257,7 @@ class MainScreen(qtw.QMainWindow) :
 
     def rmsClicked(self) :
         activeWidgetIndex = self.getCurrentIndex()
-        f = open(os.path.join(RESOURCES_DIR,'resources', 'config_test.json'))
+        f = open(os.path.join(RESOURCES_DIR,'resources', 'config.json'))
         data = json.load(f)
         arrData = data["ip_list"][activeWidgetIndex]
         ip = arrData['rms_url']['ip']
@@ -260,7 +269,7 @@ class MainScreen(qtw.QMainWindow) :
     def chargerClicked(self) :
         self.chargerUi.close()
         activeWidgetIndex = self.getCurrentIndex()
-        f = open(os.path.join(RESOURCES_DIR,'resources', 'config_test.json'))
+        f = open(os.path.join(RESOURCES_DIR,'resources', 'config.json'))
         data = json.load(f)
         arrData = data["ip_list"][activeWidgetIndex]
         ip = arrData['charger_url']['ip']
@@ -478,7 +487,7 @@ class MainScreen(qtw.QMainWindow) :
             # elif dat.bid == 8 :
             #     self.activeWidget.homeWindow.packstatus8.setStyleSheet("QPushButton{\n	border-radius : 8px;\n	background-color: rgb(0, 255, 0);\n}")
         if(statusVcell and statusTemperature) :
-            tabBar.setTabTextColor(index, qtg.QColor(0, 255, 0))
+            tabBar.setTabTextColor(index, qtg.QColor(58, 163, 54))
                 
 
     def checkCharger(self, batteryData : list[BatteryData]) :
@@ -516,12 +525,12 @@ class MainScreen(qtw.QMainWindow) :
         temp = batteryData.temperature
         vpack = batteryData.vpack
 
-        for x in vcell :
-            if (x > 3600) :
-                if(self.isChargeStart != self.lastChargeStart) :
-                    self.lastChargeStart = self.isChargeStart
-                    print("Stop Charge")
-                break
+        # for x in vcell :
+        #     if (x > 3600) :
+        #         if(self.isChargeStart != self.lastChargeStart) :
+        #             self.lastChargeStart = self.isChargeStart
+        #             print("Stop Charge")
+        #         break
  
     
     def inverterDataReady(self, inverterData : list) :

@@ -1,6 +1,7 @@
 <RCC>
   <qresource prefix="resources">
     <file>icons/wifi-router.png</file>
+    <file>icons/monitor.ico</file>
     <file>icons/battery.png</file>
     <file>icons/charger-crop.png</file>
     <file>icons/solar-inverter-crop.png</file>

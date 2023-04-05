@@ -46,7 +46,7 @@ class RmsRequest(qtc.QThread, qtc.QObject):
                     print("RMS Request Failed")
                 isRequest = True
             else :
-                f = open(os.path.join(RESOURCES_DIR,'resources', 'config_test.json'))
+                f = open(os.path.join(RESOURCES_DIR,'resources', 'config.json'))
                 data = json.load(f)
                 totalSize = len(data["ip_list"])
                 if (self.lastIndex >= totalSize) :
@@ -58,7 +58,7 @@ class RmsRequest(qtc.QThread, qtc.QObject):
                 ip = arrData['rms_url']['ip']
                 url = str(arrData['rms_url']['data_url'])
                 url = url.replace("%ip", ip)
-                # print("Send Get Request to Url : ", url)
+                print("Send Get Request to Url : ", url)
                 try :
                     r = requests.get(url, timeout = 1)
                     response = r.json()
@@ -67,14 +67,14 @@ class RmsRequest(qtc.QThread, qtc.QObject):
                     parser.parseJson(jsonInput)
                     response = json.dumps(response)
                     response += '\n'
-                    # print("RMS Request Success")
+                    print("RMS Request Success")
                     data = parser.batteryData.copy()
                     # self.batteryData.emit(parser.batteryData)
                     self.batteryData.emit(data, currIndex, ip)
                     # print("Current Index %i \n" %(currIndex))
                 except :
                     self.failedToGetData.emit(1, currIndex)
-                    # print("RMS Request Failed")
+                    print("RMS Request Failed")
             self.requestResponse.emit(response)
             if(isRequest) :
                 time.sleep(0.1)

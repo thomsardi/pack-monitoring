@@ -21,7 +21,7 @@
   </property>
   <property name="windowIcon">
    <iconset resource="../res.qrc">
-    <normaloff>:/resources/icons/solar-inverter.png</normaloff>:/resources/icons/solar-inverter.png</iconset>
+    <normaloff>:/resources/icons/solar-inverter-crop.png</normaloff>:/resources/icons/solar-inverter-crop.png</iconset>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>

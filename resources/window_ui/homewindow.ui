@@ -20,8 +20,8 @@
    <string>BMS</string>
   </property>
   <property name="windowIcon">
-   <iconset>
-    <normaloff>resources/icons/main_apps.png</normaloff>resources/icons/main_apps.png</iconset>
+   <iconset resource="../res.qrc">
+    <normaloff>:/resources/icons/monitor.ico</normaloff>:/resources/icons/monitor.ico</iconset>
   </property>
   <widget class="QWidget" name="centralwidget">
    <property name="styleSheet">
