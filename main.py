@@ -45,6 +45,7 @@ class MainScreen(qtw.QMainWindow) :
     def __init__(self, *args, **kwargs) :
         super().__init__()
         self.tabNameList = []
+        self.rackSnList = []
         self.isChargeStart = False
         self.lastChargeStart = False
         self.__stopFlag = Event()
@@ -371,8 +372,12 @@ class MainScreen(qtw.QMainWindow) :
             # self.activeWidget.homeWindow.packstatus7.setStyleSheet("QPushButton{\n	border-radius : 8px;\n	background-color: rgb(0, 0, 0);\n}")
             # self.activeWidget.homeWindow.packstatus8.setStyleSheet("QPushButton{\n	border-radius : 8px;\n	background-color: rgb(0, 0, 0);\n}")
 
-    def batteryDataReady(self, batteryData : list[BatteryData], dataIndex : int, ipName : str) :
+    def batteryDataReady(self, batteryData : list[BatteryData], dataIndex : int, ipName : str, rackSn : str) :
         isFound = False
+        currentIndex = self.getCurrentIndex()
+        if currentIndex == dataIndex-1 :
+            self.rmsUi.updateRackSnLineEdit(rackSn)
+        
         for x in self.currentBatteryData :
             if x['index'] == dataIndex :
                 x['data'] = batteryData.copy()

@@ -141,8 +141,10 @@ class BatteryData() :
 class BatteryDataParser() :
     def __init__(self) -> None:
         self.__batteryData = []
+        self.__rackSn = ""
 
     def parseJson(self, json : dict) :
+        self.__rackSn = json['rack_sn']
         dataList = []
         dataList = json['cms_data']
         for dat in dataList :
@@ -165,3 +167,7 @@ class BatteryDataParser() :
     @property
     def batteryData(self) :
         return self.__batteryData
+    
+    @property
+    def rackSn(self) :
+        return self.__rackSn

@@ -12,7 +12,7 @@ from ..definition import RESOURCES_DIR
 
 class RmsRequest(qtc.QThread, qtc.QObject):
     requestResponse = qtc.pyqtSignal(str)
-    batteryData = qtc.pyqtSignal(list, int, str)
+    batteryData = qtc.pyqtSignal(list, int, str, str)
     status = qtc.pyqtSignal(int)
     failedToGetData = qtc.pyqtSignal(int, int)
     def __init__(self):
@@ -60,7 +60,7 @@ class RmsRequest(qtc.QThread, qtc.QObject):
                 url = url.replace("%ip", ip)
                 print("Send Get Request to Url : ", url)
                 try :
-                    r = requests.get(url, timeout = 1)
+                    r = requests.get(url, timeout = 2)
                     response = r.json()
                     jsonInput = response
                     parser = BatteryDataParser()
@@ -69,8 +69,9 @@ class RmsRequest(qtc.QThread, qtc.QObject):
                     response += '\n'
                     print("RMS Request Success")
                     data = parser.batteryData.copy()
+                    rackSn = parser.rackSn
                     # self.batteryData.emit(parser.batteryData)
-                    self.batteryData.emit(data, currIndex, ip)
+                    self.batteryData.emit(data, currIndex, ip, rackSn)
                     # print("Current Index %i \n" %(currIndex))
                 except :
                     self.failedToGetData.emit(1, currIndex)
@@ -99,6 +100,19 @@ class RmsRequest(qtc.QThread, qtc.QObject):
                 }
         # self.activeData = data
         # self.activeUrl = self.dataCollectionUrl
+        command = Command()
+        command.data = data
+        command.url = url
+        self.insertToQueue(command)
+        return command
+    
+    def setRackSn(self, value : int, rackSn : str, url : str) -> Command:
+        data =  {
+                  'rack_sn_write' : value,
+                  'rack_sn' : rackSn
+                }
+        # self.activeData = data
+        # self.activeUrl = self.frameUrl
         command = Command()
         command.data = data
         command.url = url

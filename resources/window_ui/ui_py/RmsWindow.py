@@ -24,6 +24,7 @@ class RmsWindow(qtw.QWidget) :
         self.ui.addresspushButton.clicked.connect(self.addressClicked)
         self.ui.startdatapushButton.clicked.connect(self.startDataClicked)
         self.ui.stopdatapushButton.clicked.connect(self.stopDataClicked)
+        self.ui.racksnapplypushButton.clicked.connect(self.applyRackSnClicked)
         self.ui.frameapplypushButton.clicked.connect(self.applyFrameClicked)
         self.ui.cmscodeapplypushButton.clicked.connect(self.applyCmsClicked)
         self.ui.basecodeapplypushButton.clicked.connect(self.applyBaseClicked)
@@ -86,6 +87,29 @@ class RmsWindow(qtw.QWidget) :
         command = Command()
         r = RmsRequest()
         command = r.setDataCollection(0, url)
+        self.command.emit(command)
+
+    def applyRackSnClicked(self) :
+
+        code = self.ui.racksnlineEdit.text()
+        if (code == "") :
+            return
+        
+        f = open(os.path.join(RESOURCES_DIR,'resources', 'config.json'))
+        data = json.load(f)
+        arrData = data['ip_list']
+        url : str = ""
+        ip : str = ""
+        for x in arrData :
+            if x['number'] == self.activeWidgetIndex+1 :
+                url = x['rms_url']['rack_sn_url']
+                ip = x['rms_url']['ip']
+                break
+        
+        url = url.replace("%ip", ip)
+        command = Command()
+        r = RmsRequest()
+        command = r.setRackSn(1, code, url)
         self.command.emit(command)
 
     def applyFrameClicked(self) :
@@ -255,6 +279,9 @@ class RmsWindow(qtw.QWidget) :
 
     def updateIpLineEdit(self, ipName : str) :
         self.ui.ipAddressLineEdit.setText(ipName)
+
+    def updateRackSnLineEdit(self, rackSn : str) :
+        self.ui.rackSnLineEditInfo.setText(rackSn)
 
     def setActiveWidgetIndex(self, index) :
         self.activeWidgetIndex = index
